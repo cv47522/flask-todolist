@@ -1,3 +1,4 @@
+from crypt import methods
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -47,6 +48,22 @@ def delete(id: int):
         return redirect('/')
     except:
         return 'problem with task deletion'
+
+
+@app.route('/update/<int:id>', methods=['GET', 'POST'])
+def update(id: int):
+    task = Todo.query.get_or_404(id)
+
+    if request.method == 'POST':
+        task.content = request.form['content']
+
+        try:
+            db.session.commit()
+            return redirect('/')
+        except:
+            return 'problem with update task'
+    else:
+        return render_template('update.html', task=task)
 
 if __name__ == '__main__':
     app.run(debug=True)
